@@ -37,7 +37,10 @@ class _CityScreenListState extends State<CityScreenList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orange,
       appBar: AppBar(
+        backgroundColor: Colors.purpleAccent,
+        shadowColor: Colors.blue,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -60,7 +63,10 @@ class _CityScreenListState extends State<CityScreenList> {
               itemCount: searchedCities.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(searchedCities[index]),
+                  title: Text(
+                    searchedCities[index],
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onTap: () {
                     Provider.of<PersonData>(context, listen: false)
                         .addCity(searchedCities[index]);

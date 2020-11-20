@@ -39,7 +39,11 @@ class _StateScreenListState extends State<StateScreenList> {
   Widget build(BuildContext context) {
     //getData();
     return Scaffold(
+      backgroundColor: Colors.orange,
       appBar: AppBar(
+        backgroundColor: Colors.purpleAccent,
+        shadowColor: Colors.blue[800],
+        elevation: 12,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -62,7 +66,10 @@ class _StateScreenListState extends State<StateScreenList> {
               itemCount: searchStates.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(searchStates[index]),
+                  title: Text(
+                    searchStates[index],
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onTap: () {
                     int i = states.indexOf(searchStates[index]);
                     if (_data[i]['stateId'] != null) {
