@@ -29,3 +29,17 @@ const kIndiaText = TextStyle(
   fontWeight: FontWeight.w700,
   fontSize: 40,
 );
+
+const kSearchInputDecoration = InputDecoration(
+  contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10),
+  border: OutlineInputBorder(
+    borderSide: BorderSide(width: 0, color: Colors.transparent),
+    borderRadius: const BorderRadius.all(
+      const Radius.circular(30.0),
+    ),
+  ),
+  filled: true,
+  hintStyle: TextStyle(color: Colors.grey),
+  hintText: "Search State",
+  fillColor: Colors.white,
+);

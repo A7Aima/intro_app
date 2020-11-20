@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intro_app/screens/info_screen.dart';
 import 'package:splashscreen/splashscreen.dart';
 

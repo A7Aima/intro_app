@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intro_app/models/personData.dart';
 import 'package:intro_app/screens/state_screen.dart';
+import 'package:provider/provider.dart';
 
 class InfoScreen extends StatefulWidget {
   @override
@@ -49,13 +51,13 @@ class _InfoScreenState extends State<InfoScreen> {
             FlatButton(
               onPressed: () {
                 if (name != null && gender != null) {
+                  Provider.of<PersonData>(context, listen: false).addName(name);
+                  Provider.of<PersonData>(context, listen: false)
+                      .addGender(gender);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => StateScreenList(
-                        name: name,
-                        gender: gender,
-                      ),
+                      builder: (context) => StateScreenList(),
                     ),
                   );
                 }

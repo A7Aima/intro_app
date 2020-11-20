@@ -1,32 +1,29 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:intro_app/constants.dart';
+import 'package:intro_app/models/personData.dart';
 import 'package:intro_app/screens/output_screen.dart';
+import 'package:intro_app/services/location.dart';
+import 'package:provider/provider.dart';
 
 class CityScreenList extends StatefulWidget {
-  final String state;
   final String stateId;
-  final String name;
-  final String gender;
-  CityScreenList({this.gender, this.name, this.state, this.stateId});
+  CityScreenList({this.stateId});
   @override
   _CityScreenListState createState() => _CityScreenListState();
 }
 
 class _CityScreenListState extends State<CityScreenList> {
   List<String> cities = [];
-
+  List<String> searchedCities = [];
   var _data;
+  bool _search = false;
 
   void getData() async {
-    http.Response response = await http
-        .get('http://api.minebrat.com/api/v1/states/cities/${widget.stateId}');
-    _data = jsonDecode(response.body);
-    print("${_data.length}");
+    _data = await LocationInfo().getCityData(widget.stateId);
     for (var city in _data) {
       cities.add(city['cityName']);
     }
+    searchedCities = cities;
     setState(() {});
   }
 
@@ -41,31 +38,60 @@ class _CityScreenListState extends State<CityScreenList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select City'),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _search = !_search;
+              });
+            },
+            icon: !_search ? Icon(Icons.search) : Icon(Icons.clear),
+          )
+        ],
+        title: _search ? buildSearchButton() : Text('Select City'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: cities.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(cities[index]),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OutputScreen(
-                    name: widget.name,
-                    gender: widget.gender,
-                    state: widget.state,
-                    city: cities[index],
-                  ),
-                ),
-              );
-              // print(_data[index]['stateId']);
-            },
-          );
-        },
-      ),
+      body: cities.isEmpty
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
+              itemCount: searchedCities.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(searchedCities[index]),
+                  onTap: () {
+                    Provider.of<PersonData>(context, listen: false)
+                        .addCity(searchedCities[index]);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OutputScreen(),
+                      ),
+                    );
+                    // print(_data[index]['stateId']);
+                  },
+                );
+              },
+            ),
+    );
+  }
+
+  TextField buildSearchButton() {
+    return TextField(
+      decoration: kSearchInputDecoration,
+      onChanged: (value) {
+        setState(() {
+          searchedCities = cities
+              .where((element) =>
+                  element.toLowerCase().contains(value.toLowerCase()))
+              .toList();
+          if (value.isEmpty) {
+            searchedCities = cities;
+          }
+        });
+      },
     );
   }
 }

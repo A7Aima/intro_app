@@ -1,8 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:intro_app/constants.dart';
+import 'package:intro_app/models/personData.dart';
 import 'package:intro_app/screens/city_screen.dart';
+import 'package:intro_app/services/location.dart';
+import 'package:provider/provider.dart';
 
 class StateScreenList extends StatefulWidget {
   final String name;
@@ -14,16 +15,16 @@ class StateScreenList extends StatefulWidget {
 
 class _StateScreenListState extends State<StateScreenList> {
   List<String> states = [];
+  List<String> searchStates = [];
+  bool _search = false;
   var _data;
 
   void getData() async {
-    http.Response response =
-        await http.get('http://api.minebrat.com/api/v1/states');
-    _data = jsonDecode(response.body);
-    print("${_data.length}");
+    _data = await LocationInfo().getStateData();
     for (var state in _data) {
       states.add(state['stateName']);
     }
+    searchStates = states;
     setState(() {});
   }
 
@@ -39,33 +40,68 @@ class _StateScreenListState extends State<StateScreenList> {
     //getData();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select State'),
-        centerTitle: true,
-      ),
-      body: ListView.builder(
-        itemCount: states.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(states[index]),
-            onTap: () {
-              if (_data[index]['stateId'] != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CityScreenList(
-                      name: widget.name,
-                      gender: widget.gender,
-                      state: states[index],
-                      stateId: _data[index]['stateId'],
-                    ),
-                  ),
-                );
-              }
-              //print(_data[index]['stateId']);
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _search = !_search;
+              });
             },
-          );
-        },
+            icon: _search ? Icon(Icons.search) : Icon(Icons.clear),
+          )
+        ],
+        title: !_search ? buildSearchButton() : Text('Select State'),
+        centerTitle: false,
       ),
+      body: states.isEmpty
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
+              itemCount: searchStates.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(searchStates[index]),
+                  onTap: () {
+                    int i = states.indexOf(searchStates[index]);
+                    if (_data[i]['stateId'] != null) {
+                      Provider.of<PersonData>(context, listen: false)
+                          .addState(searchStates[index]);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CityScreenList(
+                            stateId: _data[i]['stateId'],
+                          ),
+                        ),
+                      );
+                    }
+                    //print(_data[index]['stateId']);
+                  },
+                );
+              },
+            ),
+    );
+  }
+
+  TextField buildSearchButton() {
+    return TextField(
+      decoration: kSearchInputDecoration,
+      onChanged: (value) {
+        setState(() {
+          searchStates = states
+              .where((element) =>
+                  element.toLowerCase().contains(value.toLowerCase()))
+              .toList();
+          if (value.isEmpty) {
+            searchStates = states;
+          }
+        });
+      },
     );
   }
 }
+
+// color: Colors.blue,
+// padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
