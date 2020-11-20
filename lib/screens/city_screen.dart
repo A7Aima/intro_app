@@ -46,7 +46,7 @@ class _CityScreenListState extends State<CityScreenList> {
                 _search = !_search;
               });
             },
-            icon: !_search ? Icon(Icons.search) : Icon(Icons.clear),
+            icon: _search ? Icon(Icons.clear) : Icon(Icons.search),
           )
         ],
         title: _search ? buildSearchButton() : Text('Select City'),

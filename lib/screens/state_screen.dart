@@ -48,10 +48,10 @@ class _StateScreenListState extends State<StateScreenList> {
                 _search = !_search;
               });
             },
-            icon: _search ? Icon(Icons.search) : Icon(Icons.clear),
+            icon: _search ? Icon(Icons.clear) : Icon(Icons.search),
           )
         ],
-        title: !_search ? buildSearchButton() : Text('Select State'),
+        title: _search ? buildSearchButton() : Text('Select State'),
         centerTitle: false,
       ),
       body: states.isEmpty
